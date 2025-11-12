@@ -1,8 +1,6 @@
 const OTPModel = require("../models/otpModel");
 
-const generateOTP = async (req) => {
-    const { email } = req.body;
-    const otp = Math.floor(1000000 + Math.random() * 9000000).toString();
+const generateOTP = async (email,otp) => {
     const newOTP = new OTPModel({
         email,
         OTP: otp
@@ -17,7 +15,28 @@ const verifyOTP = async (req) => {
     return otp 
 };
 
+const verifyOTPForSignUp = async (email,OTP) => {
+    const otp = await OTPModel.findOne({email, OTP});
+    return otp 
+};
+
+const deleteOtp = async (email) => {
+  const user = await OTPModel.deleteMany({email:email});
+  return user;
+}; 
+
+const resendOtp = async (email) => {
+  await email.toLowerCase();
+  const resend = await OTPModel.findOne({ email: email });
+
+  return resend;
+};
+
+
 module.exports = {
     generateOTP,
-    verifyOTP
+    verifyOTP,
+    deleteOtp,
+    resendOtp,
+    verifyOTPForSignUp
 };

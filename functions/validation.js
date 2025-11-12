@@ -5,11 +5,7 @@ const bcrypt = require("bcrypt");
 const validateUser = async (req) => {
     const { email } = req.body;
     const exists = await userModel.findOne({email: email});
-    if(!exists){
-        return false
-    } else {
-        return true
-    }
+    return exists
 };
 
 const validateAdmin = async (req) => {

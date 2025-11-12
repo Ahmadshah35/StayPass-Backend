@@ -6,15 +6,15 @@ const transporter = nodemailer.createTransport({
     service: "gmail",
     port: 587,
     auth:{
-        user: process.env.appEmail,
-        pass: process.env.appPassword
+        user: process.env.SMTP_MAIL,
+        pass: process.env.SMTP_PASSWORD
     }
 });
 
 const sendOTP = async (userData) => {
     try {
         let mailOptions = {
-            from: process.env.appEmail,
+            from: process.env.SMTP_MAIL,
             to: userData.email,
             subject: "Your OTP Code",
             html: `

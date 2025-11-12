@@ -13,16 +13,20 @@ const getContactForm = async (req) => {
 };
 
 const getAllContactForms = async (req) => {
-    const { } = req.query;
+    const { ownerId, userId, contactFormId, propertyId } = req.query;
     const filter = {};
+    if(ownerId) filter.ownerId = ownerId
+    if(userId) filter.userId = userId
+    if(propertyId) filter.propertyId = propertyId
+    if(contactFormId) filter._id = contactFormId
 
-    const forms = await contactModel.find(filter);
+    const forms = await contactModel.find(filter).populate("ownerId","-password").populate("userId","-password").populate("propertyId");
     return forms
 };
 
 const deleteContactForm = async (req) => {
-    const { formId } = req.body;
-    const form = await contactModel.findByIdAndDelete(formId);
+    const { contactFormId } = req.body;
+    const form = await contactModel.findByIdAndDelete(contactFormId);
     return form
 };
 
