@@ -2,6 +2,7 @@ const jwt = require("jsonwebtoken");
 const multer = require("multer");
 require("dotenv").config();
 const userModel = require("../models/user");
+const path = require("path");
 
 // const verifyUser = async (req, res, next) => {
 //     const bearerHeader = req.headers['authorization'];
@@ -74,13 +75,43 @@ const PropertyStorage = multer.diskStorage({
 const propertyUpload = multer({storage: PropertyStorage,});
 
 
-const postStorage = multer.diskStorage({
-  destination: "./public/post",
+// const postStorage = multer.diskStorage({
+//   destination: "./public/post",
+//   filename: (req, file, cb) => {
+//     cb(null, Date.now() + "-" + file.originalname);
+//   },
+// });
+// const postUpload = multer({storage: postStorage,});
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "./public/post");
+  },
   filename: (req, file, cb) => {
-    cb(null, Date.now() + "-" + file.originalname);
+    const ext = path.extname(file.originalname);
+    const base = path.basename(file.originalname, ext);
+    const safeName = base.replace(/\s+/g, "_"); // <-- remove spaces
+    cb(null, Date.now() + "-" + safeName + ext);
   },
 });
-const postUpload = multer({storage: postStorage,});
+
+const fileFilter = (req, file, cb) => {
+  const imageTypes = ["image/jpeg", "image/jpg", "image/png", "image/webp", "image/heic"];
+  const videoTypes = ["video/mp4", "video/mov", "video/avi", "video/mkv", "video/webm"];
+
+  if (imageTypes.includes(file.mimetype) || videoTypes.includes(file.mimetype)) {
+    cb(null, true);
+  } else {
+    cb(new Error("Only image and video files are allowed!"), false);
+  }
+};
+
+// 10 MB for images, 50 MB for videos
+const postUpload = multer({
+  storage,
+  fileFilter,
+  // limits: { fileSize: 50 * 1024 * 1024 },
+});
 
 
 module.exports = {

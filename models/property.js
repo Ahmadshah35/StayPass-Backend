@@ -10,7 +10,7 @@ const propertySchema = new Schema({
     },
     category:{
         type: String,
-        enum: ["Sell", "Rent", "Vocational Rent", "Lease"],
+        enum: ["Sell", "Rent", "VocationalRent", "Lease"],
         required: true
     },
     propertyName:{

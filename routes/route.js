@@ -8,7 +8,8 @@ const contactFormController = require("../controllers/contact");
 const bookingController = require("../controllers/booking");
 const favoriteController = require("../controllers/favorite");
 const reviewController = require("../controllers/review");
-const postController = require("../controllers/post")
+const postController = require("../controllers/post");
+const walletController = require("../controllers/wallet");
 
 
 // Auth
@@ -59,6 +60,9 @@ route.post("/user/addReview", reviewController.addReview);
 route.post("/user/updateReviews", reviewController.updateReviews);
 route.post("/user/deleteReview", reviewController.deleteReview);
 route.get("/user/getAllReviews", reviewController.getAllReviews);
+route.post("/user/giveReplyOnReview", reviewController.giveReplyOnReview);
+route.post("/user/deleteReply", reviewController.deleteReply);
+route.post("/user/updateReply", reviewController.updateReply);
 
 //Post
 route.post("/user/createPost",uploadController.postUpload.fields([{name :"posts",maxCount:"4"}]),postController.createPost)
@@ -71,7 +75,9 @@ route.post("/user/sharePost",postController.sharePost)
 route.get("/user/getPostById",postController.getPostById)
 route.get("/user/getAllPost",postController.getAllPost)
 
-
+// Wallet
+route.post("/user/paymentWithWallet", walletController.paymentWithWallet);
+route.get("/user/getWalletByUserId", uploadController.checkUserAuth, walletController.getWalletByUserId);
 
 
 

@@ -82,9 +82,50 @@ const deleteReview = async (req, res) => {
   }
 };
 
+const giveReplyOnReview = async (req, res) => {
+  try {
+    const reviews = await reviewFunction.replyToReview(req);
+    if (reviews.length === 0) return res.status(400).json({success: false,message: "No Reviews Found!",});
+    return res.status(200).json({success: true,message: "successfully replied",data: reviews,});
+    
+  } catch (error) {
+    console.log("Having Errors:", error);
+    return res.status(400).json({success: false,message: "Something Went Wrong!",error: error.message,});
+  }
+};
+
+const deleteReply = async (req, res) => {
+  try {
+    const reviews = await reviewFunction.deleteReply(req);
+    if (reviews.length === 0) return res.status(400).json({success: false,message: "No Reviews Found!",});
+    return res.status(200).json({success: true,message: "reply deleted successfully",data: reviews,});
+    
+  } catch (error) {
+    console.log("Having Errors:", error);
+    return res.status(400).json({success: false,message: "Something Went Wrong!",error: error.message,});
+  }
+};
+
+const updateReply = async (req, res) => {
+  try {
+    const reviews = await reviewFunction.updateReply(req);
+    if (reviews.length === 0) return res.status(400).json({success: false,message: "No Reviews Found!",});
+    return res.status(200).json({success: true,message: "reply Updated successfully",data: reviews,});
+  
+  } catch (error) {
+    console.log("Having Errors:", error);
+    return res.status(400).json({success: false,message: "Something Went Wrong!",error: error.message,});
+  }
+};
+
+
+
 module.exports = {
   addReview,
   getAllReviews,
   updateReviews,
   deleteReview,
+  giveReplyOnReview,
+  deleteReply,
+  updateReply
 };

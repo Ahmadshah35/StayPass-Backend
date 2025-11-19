@@ -28,7 +28,7 @@ const deleteReview = async (req) => {
 };
 
 const getAllReviews = async (req) => {
-    const { userId, vendorId, propertyId, star, reviewId } = req.query;
+    const { userId, vendorId, propertyId, rating, reviewId } = req.query;
     const filter = {};
     if(userId) filter.userId = userId
     if(vendorId) filter.vendorId = vendorId
@@ -37,6 +37,51 @@ const getAllReviews = async (req) => {
     if(rating) filter.rating = rating
     const reviews = await reviewModel.find(filter);
     return reviews
+};
+
+const replyToReview = async (req) => {
+  const {reviewId, vendorId, message } = req.body;
+
+  const reply = { vendorId, message, };
+
+  const updatedPost = await reviewModel.findOneAndUpdate(
+    { _id: reviewId },
+    { $push: { replies: reply } },
+    { new: true }
+  );
+  return updatedPost;
+};
+
+const deleteReply = async (req) => {
+  const { reviewId, replyId } = req.body;
+
+  const updatedReview = await reviewModel.findOneAndUpdate(
+    { _id: reviewId, "replies._id": replyId },
+    { $pull: { replies: { _id: replyId } } },
+    { new: true }
+  );
+
+  return updatedReview;
+};
+
+const updateReply = async (req) => {
+  const {vendorId, reviewId, replyId, message } = req.body;
+  const now = new Date();
+
+  const updatedReview = await reviewModel.findOneAndUpdate(
+    { _id: reviewId, "replies._id": replyId, "replies.vendorId": vendorId },
+    {
+      $set: {
+        "replies.$.message": message.trim(),
+        "replies.$.updatedAt": now,
+      },
+    },
+    { new: true }
+  )
+  .populate("userId", "name image email")
+  .populate("replies.vendorId", "name image email");
+
+  return updatedReview;
 };
 
 const avgRatingOfVendor = async (vendorId) => {
@@ -83,6 +128,9 @@ const getReviewByPropertyAndUserId = async (userId,propertyId) => {
 
 module.exports = {
 createReview,
+replyToReview,
+updateReply,
+deleteReply,
 updateReview,
 deleteReview,
 avgRatingOfHotel,

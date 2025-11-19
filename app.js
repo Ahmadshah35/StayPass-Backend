@@ -14,7 +14,30 @@ app.use(express.json());
 
 app.use("/", express.static(path.resolve(__dirname, "./public/property")));
 app.use("/", express.static(path.resolve(__dirname, "./public/userProfile")));
-app.use("/", express.static(path.resolve(__dirname, "./public/post")));
+app.use("/", express.static(path.resolve(__dirname, "./public/post"),{
+  setHeaders: (res, filePath) => {
+  // Handle video content type
+  if (filePath.endsWith(".mp4")) {
+    res.setHeader("Content-Type", "video/mp4");
+  }
+  // Handle images (jpg, jpeg, png, gif, webp)
+  else if (
+    filePath.endsWith(".jpg") ||
+    filePath.endsWith(".jpeg") ||
+    filePath.endsWith(".png") ||
+    filePath.endsWith(".gif") ||
+    filePath.endsWith(".webp")
+  ) {
+    res.setHeader("Content-Type", `image/${path.extname(filePath).substring(1)}`);
+  }
+  // Optional: PDF, audio, etc.
+  else if (filePath.endsWith(".pdf")) {
+    res.setHeader("Content-Type", "application/pdf");
+  } else if (filePath.endsWith(".mp3")) {
+    res.setHeader("Content-Type", "audio/mpeg");
+  }
+  },
+}));
 
 
 app.get("/", (req, res) => { res.send("StayPass-Backend is Wokring!") });

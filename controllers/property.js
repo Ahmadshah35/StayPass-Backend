@@ -1,9 +1,22 @@
 const propertyFunctions = require("../functions/property");
+const userModel = require("../models/user");
 
 const addProperty = async (req, res) => {
   try {
     const property = await propertyFunctions.addProperty(req);
     if (!property) return res.status(400).json({success: false,message: "Property is Not Added!",});
+
+    const categoryToField = {
+      Sell: "forSale",
+      Rent: "forRent",
+      VocationalRent: "forVocationalRent",
+      Lease: "forLease",
+    };
+    
+    const userField = categoryToField[property.category];
+    if (userField) {
+      await userModel.findByIdAndUpdate(property.ownerId,{ $inc: { [userField]: 1 } },{ new: true });
+    }
     return res.status(200).json({success: true,message: "Property Added Successfully!",data: property,});
     
   } catch (error) {
@@ -40,6 +53,17 @@ const deleteProperty = async (req, res) => {
   try {
     const property = await propertyFunctions.deleteProperty(req);
     if (!property) return res.status(400).json({success: false,message: "No Property Found to Delete!",});
+    const categoryToField = {
+      Sell: "forSale",
+      Rent: "forRent",
+      VocationalRent: "forVocationalRent",
+      Lease: "forLease",
+    };
+    const userField = categoryToField[property.category];
+    if (userField && property.ownerId) {
+      await userModel.findByIdAndUpdate(property.ownerId,{ $inc: { [userField]: -1 } }, { new: true });
+    }
+
     return res.status(200).json({success: true,message: "Property is Deleted Successfully!",});
 
   } catch (error) {

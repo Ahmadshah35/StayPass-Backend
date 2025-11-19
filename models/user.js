@@ -59,6 +59,22 @@ const userSchema = new Schema({
   totalReviews: {
     type: Number,
   },
+  walletBalance: {
+    type: Number,
+    default: 0,
+  },
+  forSale: {
+    type: Number,
+  },
+  forRent: {
+    type: Number,
+  },
+  forVocationalRent: {
+    type: Number,
+  },
+  forLease: {
+    type: Number,
+  },
   bankName: {
     type: String,
   },

@@ -40,7 +40,7 @@ const getPropertyByPropertyId = async (propertyId) => {
 };
 
 const getAllProperties = async (req) => {
-  const {propertyId,name,ownerId,category,type,features,noOfRooms,longitude,latitude,} = req.query;
+  const {propertyId,name,ownerId,category,type,features,noOfRooms,longitude,latitude,minPrice,maxPrice} = req.query;
 
   const filter = {};
 
@@ -61,6 +61,11 @@ const getAllProperties = async (req) => {
   if (features) {
     const parsedFeatures = typeof features === "string" ? JSON.parse(features) : features;
     filter.features = { $in: parsedFeatures };
+  }
+  if (minPrice || maxPrice) {
+    filter.price = {};
+    if (minPrice) filter.price.$gte = Number(minPrice);
+    if (maxPrice) filter.price.$lte = Number(maxPrice);
   }
 
   const properties = await propertyModel.find(filter).populate("rooms") .sort({ createdAt: -1 }); 
@@ -133,7 +138,7 @@ const removePropertyRoom = async (propertyId, roomId) => {
 };
 
 const deleteProperty = async (req) => {
-    const { propertyId } = req.query;
+    const { propertyId } = req.body;
     const property = await propertyModel.findByIdAndDelete(propertyId);
     const propertyRoom = await roomModel.deleteMany({propertyId:propertyId})
     return property
